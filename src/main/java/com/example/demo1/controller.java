@@ -41,7 +41,7 @@ public class controller {
         list.add(student1);
         ;
        redisUtil.set("hdx666",JSONObject.toJSONString(list));
-       redisUtil.set("address3","安庆");
+       redisUtil.set("address4","安庆");
        List<Student> students=JSONObject.parseArray(redisUtil.get("hdx666").toString(),Student.class);
         return studentMapper.selectStudent(4);
     }
