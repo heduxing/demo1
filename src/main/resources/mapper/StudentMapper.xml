@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo1.StudentMapper">
+    <resultMap id="BaseResultMap" type="com.example.demo1.Student">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="sid" jdbcType="INTEGER" property="sid"/>
+        <result column="sname" jdbcType="VARCHAR" property="sname"/>
+        <result column="s_age" jdbcType="INTEGER" property="sAge"/>
+        <result column="ssex" jdbcType="CHAR" property="ssex"/>
+    </resultMap>
+    <select id="selectStudent" resultMap="BaseResultMap">
+     select * from student
+    </select>
+
+    <select id="selectAllByName" resultType="com.example.demo1.StudentRespose">
+        select s.sid,s.sname,s.s_age as sex from student s left join sc on s.sid=sc.sid where 1=1
+        <if test="sname!=''">
+            and sname like '%${sname}%'
+        </if>
+
+        <if test="sage!='' and sage!=null">
+            and s_age &lt; #{sage}
+        </if>
+        <if test="sids !=null">
+            and s.sid in(
+            <foreach collection="sids" index="" item="id" separator=",">
+                #{id}
+            </foreach>
+            )
+        </if>
+    </select>
+    <insert id="insertOne" parameterType="com.example.demo1.Student">
+        <selectKey keyProperty="sid" resultType="int" order="AFTER">
+            select LAST_INSERT_ID();
+        </selectKey>
+        insert into student(sname,s_age,ssex) values (#{sname},#{sAge},#{ssex})
+    </insert>
+    <insert id="insertList" parameterType="java.util.List">
+        insert into student(sid,sname,s_age,ssex)
+        values
+        <foreach collection="list" item="s" separator="," index="">
+            (
+            #{s.sid},
+            #{s.sname},
+            #{s.sAge},
+            #{s.ssex}
+            )
+        </foreach>
+        ON duplicate key update
+        sname=values (sname),
+        s_age=values(s_age),
+        ssex=values(ssex)
+    </insert>
+    <update id="updateOne" parameterType="com.example.demo1.Student">
+        update student
+        <set>
+            sname=#{sname},
+            s_age=#{sAge},
+            ssex=#{ssex}
+        </set>
+        where sid=#{sid}
+    </update>
+    <update id="updateAll" parameterType="java.util.List">
+        <foreach collection="list" index="" item="s" separator=";">
+            update student
+            <set>
+                sname=#{s.sname},
+                s_age=#{s.sAge},
+                ssex=#{s.ssex}
+            </set>
+            where sid=#{s.sid}
+        </foreach>
+    </update>
+</mapper>
